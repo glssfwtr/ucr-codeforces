@@ -6,6 +6,34 @@ int main()
   std::ios_base::sync_with_stdio(false);
   std::cin.tie(0);
 
+  int num_shots;
+  double x;
+  double y;
+  double distance_from_center;
+  int current_shot_score;
+  int total_score = 0;
+
+  std::cin >> num_shots;
+
+  for (int i = 0; i < num_shots; ++i)
+  {
+    std::cin >> x;
+    std::cin >> y;
+
+    // Calculate the distance from the center of the target (0, 0)
+    distance_from_center = std::pow(x, 2) + std::pow(y, 2);
+
+    if ( distance_from_center > 1.0 )
+    {
+      continue; // skip shot score calculation if outside
+    }
+
+    std::cout << "Distance: " << distance_from_center << "\n";
+
+    // current_shot_score =
+
+    total_score += current_shot_score;
+  }
 
 
 
