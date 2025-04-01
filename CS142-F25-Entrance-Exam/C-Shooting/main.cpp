@@ -20,13 +20,19 @@ int main()
     std::cin >> x;
     std::cin >> y;
 
-    // Calculate the distance from the center of the target (0, 0)
-    distance_from_center = std::pow(x, 2) + std::pow(y, 2);
+    // distance formula from center (0, 0) to (x, y)
+    distance_from_center = sqrt(std::pow(x, 2) + std::pow(y, 2));
 
     if ( distance_from_center > 1.0 )
     {
       continue; // skip shot score calculation if outside
     }
+
+
+
+
+    // DO THE THING
+
 
     std::cout << "Distance: " << distance_from_center << "\n";
 
