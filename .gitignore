@@ -1,0 +1,12 @@
+.vscode/
+*.aux
+*.exe
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.pdf
+*.synctex.gz
+*.tex
+*.toc
+build/
