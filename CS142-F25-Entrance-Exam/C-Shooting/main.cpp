@@ -28,20 +28,23 @@ int main()
       continue; // skip shot score calculation if outside
     }
 
+    /*
+      10 bands to score from 10 to 1 in to out
 
+      0.0 - 0.1 = 10
+      0.1 - 0.2 = 9
+      0.2 - 0.3 = 8
+    */
 
+    // std::cout << "Distance: " << distance_from_center << "\n";
 
-    // DO THE THING
-
-
-    std::cout << "Distance: " << distance_from_center << "\n";
-
-    // current_shot_score =
+    // convert landing distance to scoring band from center
+    current_shot_score = 10 - static_cast<int>(10 * distance_from_center);
 
     total_score += current_shot_score;
   }
 
-
+  std::cout << total_score;
 
   return 0;
 }
