@@ -47,7 +47,6 @@ int FindMinimumMoves(const std::unordered_set<std::pair<int, int>, IntegerPairHa
 
   while ( !bfs_queue.empty() )
   {
-
     current_queue_temp = bfs_queue.front();
     bfs_queue.pop();
 
@@ -120,18 +119,18 @@ int main()
     end_position = ParseBoardPosition(position_input);
 
     results.push_back(FindMinimumMoves(occupied_positions, start_position, end_position));
-
-    }
+  }
 
   for ( std::size_t i = 0; i < results.size(); ++i )
   {
-    if (results[i] == -1)
+    if ( results[i] == -1 )
     {
       std::cout << "Board " << i + 1 << ": not reachable\n";
     }
     else
-
-    std::cout << "Board " << i + 1 << ": " << results[i] << " moves\n";
+    {
+      std::cout << "Board " << i + 1 << ": " << results[i] << " moves\n";
+    }
   }
 
   return 0;
