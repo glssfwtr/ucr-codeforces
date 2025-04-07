@@ -77,8 +77,6 @@ int main()
     dp[0][i] = static_cast<int>(i);
   }
 
-
-
   for (std::size_t i = 1; i <= num_problems; ++i)
   {
     for (std::size_t j = 1; j <= num_problems; ++j)
@@ -97,10 +95,6 @@ int main()
       // print_dp_array(dp, standard_sheldon_answers, raj_answers, num_problems);
     }
   }
-
-
-
-
 
   std::cout << dp[num_problems][num_problems];
 
