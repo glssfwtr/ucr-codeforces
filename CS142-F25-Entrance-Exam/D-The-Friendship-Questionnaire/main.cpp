@@ -3,41 +3,41 @@
 #include <string>
 #include <vector>
 
-// // STANDARD: row entries represent first string, column entries represent second string
-// void print_dp_array(const std::vector<std::vector<int>> &dp, const std::string &standard_sheldon_answers, const std::string &raj_answers, std::size_t num_problems)
-// {
-//   std::cout << "  ";
-//   for (std::size_t i = 0; i <= num_problems; ++i)
-//   {
-//     if (i == 0)
-//     {
-//       std::cout << "  ";
-//     }
-//     else
-//     {
-//       std::cout << raj_answers[i - 1] << " ";
-//     }
-//   }
-//   std::cout << "\n";
+// STANDARD: row entries represent first string, column entries represent second string
+void print_dp_array(const std::vector<std::vector<int>> &dp, const std::string &standard_sheldon_answers, const std::string &raj_answers, std::size_t num_problems)
+{
+  std::cout << "  ";
+  for (std::size_t i = 0; i <= num_problems; ++i)
+  {
+    if (i == 0)
+    {
+      std::cout << "  ";
+    }
+    else
+    {
+      std::cout << raj_answers[i - 1] << " ";
+    }
+  }
+  std::cout << "\n";
 
-//   for (std::size_t i = 0; i <= num_problems; ++i)
-//   {
-//     if (i == 0)
-//     {
-//       std::cout << "  ";
-//     }
-//     else
-//     {
-//       std::cout << standard_sheldon_answers[i - 1] << " ";
-//     }
+  for (std::size_t i = 0; i <= num_problems; ++i)
+  {
+    if (i == 0)
+    {
+      std::cout << "  ";
+    }
+    else
+    {
+      std::cout << standard_sheldon_answers[i - 1] << " ";
+    }
 
-//     for (std::size_t j = 0; j <= num_problems; ++j)
-//     {
-//       std::cout << dp[i][j] << " ";
-//     }
-//     std::cout << "\n";
-//   }
-// }
+    for (std::size_t j = 0; j <= num_problems; ++j)
+    {
+      std::cout << dp[i][j] << " ";
+    }
+    std::cout << "\n";
+  }
+}
 
 
 int main()
@@ -92,7 +92,7 @@ int main()
       }
 
 
-      // print_dp_array(dp, standard_sheldon_answers, raj_answers, num_problems);
+      print_dp_array(dp, standard_sheldon_answers, raj_answers, num_problems);
     }
   }
 
