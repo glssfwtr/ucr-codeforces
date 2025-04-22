@@ -1,4 +1,3 @@
-.vscode/
 *.aux
 *.exe
 *.fdb_latexmk
@@ -6,7 +5,9 @@
 *.log
 *.out
 *.pdf
+*.sty
 *.synctex.gz
 *.tex
 *.toc
+.vscode/
 build/
