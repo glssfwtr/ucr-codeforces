@@ -88,6 +88,7 @@ int main()
     else
     {
       // need to find and erase because there can be chomp overlapping intervals with different point status (1 : 3)
+      // default multiset::erase() erases ALL elements, documentations have no other single erases, so need find() iterator returned position overload
       available_points.erase(available_points.find(current_event_points)); // mouth closing, find the point and remove from set
     }
 
