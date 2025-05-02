@@ -51,12 +51,12 @@ bool CompareOrientation(const Point& p1, const Point& p2, const Point& pivot)
 double CalculateConvexArea(const std::vector<Point>& hull)
 {
   double area = 0.0;
-  int n = hull.size();
+  std::size_t n = hull.size();
 
-  for ( int i = 0; i < n; ++i )
+  for ( std::size_t i = 0; i < n; ++i )
   {
     // next vertex wrapping around vertex 0
-    int j = (i + 1) % n;
+    std::size_t j = (i + 1) % n;
 
     // edge contribution of area
     area += hull[i].x * hull[j].y - hull[i].y * hull[j].x;
@@ -70,12 +70,12 @@ double CalculateConvexArea(const std::vector<Point>& hull)
 std::vector<Point> GrahamsScan(std::vector<Point>& points)
 {
   // step 1: find lowest y pivot, then x if tied
-  int n = points.size();
+  std::size_t n = points.size();
   Point pivot = points[0]; // init pivot
-  int pivot_index = 0;
+  std::size_t pivot_index = 0;
 
   // find lowest y, if y tied check x
-  for ( int i = 1; i < n; ++i )
+  for ( std::size_t i = 1; i < n; ++i )
   {
     if ( (points[i].y < pivot.y) ||
           ((points[i].y == pivot.y) && (points[i].x < pivot.x)) )
@@ -117,7 +117,7 @@ std::vector<Point> GrahamsScan(std::vector<Point>& points)
   hull.push_back(points[0]);
   hull.push_back(points[1]);
 
-  for ( int i = 2; i < n; ++i )
+  for ( std::size_t i = 2; i < n; ++i )
   {
 
     // check orientation of 2 points on stack
@@ -146,7 +146,7 @@ int main()
   std::vector<Point> convex_hull_points;
   double convex_area;
 
-  for ( int i = 0; i < 4; ++i )
+  for ( std::size_t i = 0; i < 4; ++i )
   {
     std::cin >> points[i].x >> points[i].y;
   }
