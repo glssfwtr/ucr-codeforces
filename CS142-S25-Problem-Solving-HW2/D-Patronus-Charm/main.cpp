@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cstdint>
 #include <iostream>
 #include <vector>
 
@@ -44,6 +45,9 @@ public:
 
 int main()
 {
+  std::ios_base::sync_with_stdio(false);
+  std::cin.tie(nullptr);
+
   uint64_t max_sum = 0;
   uint64_t n;
 
