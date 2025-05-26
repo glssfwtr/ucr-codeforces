@@ -24,8 +24,6 @@ int main()
   uint64_t u_node; // u -> v
 
   std::pair<uint64_t, uint64_t> top_node; // (cost, node#)
-  uint64_t top_node_cost;
-  uint64_t top_node_number;
 
   std::cin >> rows;
   std::cin >> columns;
@@ -33,6 +31,8 @@ int main()
   // priority queue with pairs of (cost, node)
   std::priority_queue<std::pair<uint64_t, uint64_t>, std::vector<std::pair<uint64_t, uint64_t>>, std::greater<>> pq;
   std::vector<bool> visited(rows * columns, false);
+
+  // list of nodes with their list of connectomg nodes as pair (weight, node#) where node# is mapped 1D later
   std::vector<std::vector<std::pair<uint64_t, uint64_t>>> adjacency_list(rows * columns);
   std::vector<std::vector<uint64_t>> shyness(rows, std::vector<uint64_t>(columns));
 
@@ -45,11 +45,16 @@ int main()
   }
 
 
+
+
+
+
+  // build graph
   for ( std::size_t i = 0; i < rows; ++i )
   {
     for ( std::size_t j = 0; j < columns; ++j )
     {
-      u_node = i * columns + j;
+      u_node = i * columns + j; // mapping to 1D node index
 
       // check moves
       if ( i > 0 )
@@ -74,26 +79,26 @@ int main()
     }
   }
 
-  // start with arbitrary node
+
+
+
+  // Prim's, start with arbitrary node
   pq.emplace(0, 0); // (cost, node)
 
   while ( !pq.empty() )
   {
     pq.pop();
 
-    top_node_cost = pq.top().first;
-    top_node_number = pq.top().second;
-
-    if ( visited[top_node_number] )
+    if ( visited[pq.top().second] )
     {
       continue;
     }
 
-    visited[top_node_number] = true;
-    total_candies += top_node_cost;
+    visited[pq.top().second] = true;
+    total_candies += pq.top().first;
 
     // add neighbors of current popped top to the priority queue
-    for ( const std::pair<uint64_t, uint64_t>& neighbor : adjacency_list[top_node_number] )
+    for ( const std::pair<uint64_t, uint64_t>& neighbor : adjacency_list[pq.top().second] )
     {
       // check node number if visited
       if ( !visited[neighbor.second] )
