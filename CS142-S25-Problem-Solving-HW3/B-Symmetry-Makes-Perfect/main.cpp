@@ -56,7 +56,7 @@ int main()
     {
       u_node = i * columns + j; // mapping to 1D node index
 
-      // check moves
+      // check moves with boundaries
       if ( i > 0 )
       {
         CreateEdges(adjacency_list, u_node, u_node - columns, std::min(shyness[i][j], shyness[i - 1][j])); // up
