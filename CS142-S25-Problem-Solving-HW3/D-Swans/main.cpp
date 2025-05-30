@@ -1,87 +1,174 @@
-#include <algorithm>
 #include <cstdint>
 #include <iostream>
+#include <queue>
+#include <string>
 #include <vector>
 
-// Fenwick Tree for finding maximum in a range efficiently
-class FenwickTree
+// 4 direction vectors for movement
+const int64_t dx[4] = {-1, 1, 0, 0};
+const int64_t dy[4] = {0, 0, -1, 1};
+
+uint64_t rows;
+uint64_t columns;
+
+std::vector<std::string> lake_grid;
+
+// track earliest day a cell can be reached
+std::vector<std::vector<int64_t>> days; // use signedness for sentinel value
+
+bool IsValidCell(int64_t x, int64_t y)
 {
-public:
-  std::vector<uint64_t> tree;
-  uint64_t size;
+  return ( (x >= 0) && (x < static_cast<int64_t>(rows)) && (y >= 0) && (y < static_cast<int64_t>(columns)) );
+}
 
-  FenwickTree(uint64_t n) : size(n)
+// BFS to calculate days needed for ice to melt
+void MeltIce(std::queue<std::pair<uint64_t, uint64_t>>& ice_queue)
+{
+  while ( !ice_queue.empty() )
   {
-    tree.resize(n + 1, 0);
-  }
+    uint64_t x = ice_queue.front().first;
+    uint64_t y = ice_queue.front().second;
 
+    ice_queue.pop();
 
-  // set all node in the tree to max of new value if applicable
-  void update(uint64_t index, uint64_t value)
-  {
-    while ( index <= size )
+    for ( std::size_t i = 0; i < 4; ++i )
     {
-      tree[index] = std::max(tree[index], value);
+      int64_t new_x = static_cast<int64_t>(x) + dx[i];
+      int64_t new_y = static_cast<int64_t>(y) + dy[i];
 
-      index += index & -index;
+      // melt neighbors
+      if (IsValidCell(new_x, new_y) && lake_grid[static_cast<uint64_t>(new_x)][static_cast<uint64_t>(new_y)] == 'X' && days[static_cast<uint64_t>(new_x)][static_cast<uint64_t>(new_y)] == -1)
+      {
+        // update day map with reachable area
+        days[static_cast<uint64_t>(new_x)][static_cast<uint64_t>(new_y)] = days[x][y] + 1;
+        ice_queue.push({new_x, new_y});
+      }
+    }
+  }
+}
+
+// BFS to check if swans can meet tracing the day map, try threshold max day
+bool CanMeet(uint64_t max_day, std::pair<uint64_t, uint64_t> start, std::pair<uint64_t, uint64_t> target_pos)
+{
+  uint64_t x;
+  uint64_t y;
+  std::queue<std::pair<uint64_t, uint64_t>> swan_queue;
+  std::vector<std::vector<bool>> visited(rows, std::vector<bool>(columns, false));
+
+  swan_queue.push(start);
+
+  visited[start.first][start.second] = true;
+
+
+  // bfs traversal
+  while ( !swan_queue.empty() )
+  {
+    x = swan_queue.front().first;
+    y = swan_queue.front().second;
+
+    swan_queue.pop();
+
+    if ( (x == target_pos.first) && (y == target_pos.second) )
+    {
+      return true;
+    }
+
+    // try traversing all directions less than max day threshold
+    for ( std::size_t i = 0; i < 4; ++i )
+    {
+      int64_t new_x = static_cast<int64_t>(x) + dx[i];
+      int64_t new_y = static_cast<int64_t>(y) + dy[i];
+
+      if ( IsValidCell(new_x, new_y) && !visited[static_cast<uint64_t>(new_x)][static_cast<uint64_t>(new_y)] && (days[static_cast<uint64_t>(new_x)][static_cast<uint64_t>(new_y)] <= static_cast<int64_t>(max_day)) )
+      {
+        visited[static_cast<uint64_t>(new_x)][static_cast<uint64_t>(new_y)] = true;
+
+        swan_queue.push({new_x, new_y});
+      }
     }
   }
 
-  // retrieve maximum value within prefix range
-  uint64_t query( uint64_t index )
-  {
-    uint64_t maxVal = 0;
 
-    while ( index > 0 )
-    {
-      maxVal = std::max(maxVal, tree[index]);
-
-      index -= index & -index;
-    }
-
-    return maxVal;
-  }
-};
+  return false;
+}
 
 int main()
 {
   std::ios_base::sync_with_stdio(false);
   std::cin.tie(nullptr);
 
-  uint64_t max_sum = 0;
-  uint64_t n;
+  std::pair<int, int> swan1;
+  std::pair<int, int> swan2;
+  std::queue<std::pair<uint64_t, uint64_t>> ice_queue;
 
-  std::cin >> n;
+  std::cin >> rows;
+  std::cin >> columns;
 
-  std::vector<uint64_t> fragment_values(n);
+  // grid of rows of strings
+  lake_grid.resize(rows);
 
-  for ( uint64_t i = 0; i < n; ++i )
+  days.assign(rows, std::vector<int64_t>(columns, -1));
+
+  for ( std::size_t i = 0; i < rows; ++i )
   {
-    std::cin >> fragment_values[i];
+    std::cin >> lake_grid[i];
+
+    for ( std::size_t j = 0; j < columns; ++j )
+    {
+      if ( lake_grid[i][j] == 'L' )
+      {
+        if ( swan1 == std::make_pair(0, 0) )
+        {
+          swan1 = {i, j};
+        }
+        else
+        {
+          swan2 = {i, j};
+        }
+
+        lake_grid[i][j] = '.'; // under swan is water
+      }
+
+      if (lake_grid[i][j] == '.')
+      {
+        days[i][j] = 0; // water cells are reachable day 0
+
+        ice_queue.push({i, j});
+      }
+    }
   }
 
 
-  // init fenwick tree
-  FenwickTree fenwick(1e6);
 
-  // for each fragment
-  for ( uint64_t i = 0; i < n; ++i )
+
+
+
+
+
+  // try melting ice
+  MeltIce(ice_queue);
+
+  // binary search to find earliest meeting day
+  uint64_t left = 0;
+  uint64_t right = 1500;
+  int64_t result = -1;
+
+  while ( left <= right )
   {
-    // query tree for maximum sum of subsequences
-    // ending with values less than the current fragment value
-    uint64_t best_prev_sum = fenwick.query(fragment_values[i] - 1);
+    uint64_t mid = (left + right) / 2; // try meeting on or before mid
 
-    // compute current sum by adding the current fragment value
-    // to the best previous sum
-    uint64_t current_sum = best_prev_sum + fragment_values[i];
-
-    // update tree with current fragment value and its sum
-    fenwick.update(fragment_values[i], current_sum);
-
-    max_sum = std::max(max_sum, current_sum);
+    if ( CanMeet(mid, swan1, swan2) )
+    {
+      result = static_cast<int64_t>(mid);
+      right = mid - 1;
+    }
+    else
+    {
+      left = mid + 1;
+    }
   }
 
-  std::cout << max_sum;
+  std::cout << result;
 
   return 0;
 }

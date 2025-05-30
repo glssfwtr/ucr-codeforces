@@ -46,7 +46,7 @@ int main()
   */
 
   // convert (i, j) cell to linear number
-  auto CellToNodeNumber = [&](int i, int j)
+  auto CellToNodeNumber = [&](uint64_t i, uint64_t j)
   {
     return i * grid_size + j;
   };
@@ -66,14 +66,14 @@ int main()
 
       for ( std::size_t k = 0; k < 4; k++ )
       {
-        int new_i = i + dir_i[k];
-        int new_j = j + dir_j[k];
+        int64_t new_i = static_cast<int64_t>(i) + dir_i[k];
+        int64_t new_j = static_cast<int64_t>(j) + dir_j[k];
 
-        if ( new_i >= 0 && new_i < grid_size && new_j >= 0 && new_j < grid_size )
+        if ( (new_i >= 0) && (new_i < static_cast<int64_t>(grid_size)) && (new_j >= 0) && (new_j < static_cast<int64_t>(grid_size)) )
         {
-          uint64_t v_node = CellToNodeNumber(new_i, new_j);
+          uint64_t v_node = CellToNodeNumber(static_cast<uint64_t>(new_i), static_cast<uint64_t>(new_j));
 
-          uint64_t weight = 1 + (grid[new_i][new_j] == 'b' ? stun_timer : 0);
+          uint64_t weight = 1 + (grid[static_cast<uint64_t>(new_i)][static_cast<uint64_t>(new_j)] == 'b' ? stun_timer : 0);
 
           adj_list[u_node].push_back({v_node, weight});
         }
