@@ -1,34 +1,70 @@
-#include <algorithm>
 #include <cstdint>
 #include <iostream>
+#include <queue>
 #include <vector>
 
-const int NEG_INF = -1e9;
-const int array_size = 200001; // -100000 to 0 to +100000, [0, 200000]
-const int index_offset = 100000;
+
+// edge properties destination, bump count, and distance
+// u to v with #bumps and #distance
+struct Edge
+{
+  uint64_t v;
+  uint64_t num_bumps;
+  uint64_t distance;
+};
+
+
+struct CurrentNodeProcessed
+{
+  uint64_t num_bumps_required; // total bumps to reach node
+  uint64_t distance_required; // total distance to reach node
+  uint64_t u; // v node index
+
+  // comparison op for min-heap by lexicographic order of bumps > distance
+  bool operator<(CurrentNodeProcessed const& o) const
+  {
+    if ( num_bumps_required != o.num_bumps_required )
+    {
+      return num_bumps_required > o.num_bumps_required; // fewer bumps = higher priority
+    }
+
+    return ( distance_required > o.distance_required ); // then shorter distance
+  }
+};
 
 int main()
 {
-  std::ios_base::sync_with_stdio(false);
+  std::ios::sync_with_stdio(false);
   std::cin.tie(nullptr);
 
-  std::vector<int> dp(array_size, NEG_INF);
-  uint64_t max_sum = 0;
-  uint64_t n;
+  uint64_t best_bumps;
+  uint64_t best_distance;
 
-  // dead on middle
-  // init state: sum_smartness = 0, sum_funness = 0
-  dp[index_offset] = 0;
+  uint64_t num_nodes;
+  uint64_t num_edges;
+
+  std::cin >> num_nodes;
+  std::cin >> num_edges;
 
 
-  std::cin >> n;
 
-  std::vector<std::pair<int, int>> cows(n);
+  // build adj list
+  std::vector<std::vector<Edge>> adj_list(num_nodes);
 
-  for ( uint64_t i = 0; i < n; ++i )
+  for ( std::size_t i = 0; i < num_edges; ++i )
   {
-    std::cin >> cows[i].first;
-    std::cin >> cows[i].second;
+    uint64_t a;
+    uint64_t b;
+    uint64_t c;
+    uint64_t d;
+
+    std::cin >> a;
+    std::cin >> b;
+    std::cin >> c;
+    std::cin >> d;
+
+    adj_list[a].push_back({b, c, d}); // a connect to b with c bumps and d distance
+    adj_list[b].push_back({a, c, d}); // b connect to a with c bumps and d distance
   }
 
 
@@ -38,61 +74,52 @@ int main()
 
 
 
+  /*
+    dijkstra's algorithm
+  */
+  // best[v] holds best (num_bumps, distance) to reach v from 0
+  std::vector<std::pair<uint64_t, uint64_t>> best_route_to(num_nodes, {1e9, 1e9});
+  best_route_to[0] = {0, 0}; // best[0] from 0 is 0,0
+
+  // minheap of processing current node
+  std::priority_queue<CurrentNodeProcessed> pq;
+  pq.push({0, 0, 0}); // starting at node 0 with (0 bumps, 0 distance)
 
 
-
-
-
-
-  for ( uint64_t i = 0; i < cows.size(); ++i )
+  while ( !pq.empty() )
   {
-    int current_cow_smartness = cows[i].first;
-    int current_cow_funness = cows[i].second;
+    uint64_t current_bumps = pq.top().num_bumps_required;
+    uint64_t current_distance = pq.top().distance_required;
+    uint64_t u_node = pq.top().u;
 
-    std::vector<int> temp_dp(dp); // copy current dp to temp w/o taking current cow
+    pq.pop();
 
-    // check every smartness i guess??????? [0, 200000]
-    for ( uint64_t j = 0; j < array_size; ++j )
+    // skip if lexicographically worse entry
+    if ( std::make_pair(current_bumps, current_distance) > best_route_to[u_node] )
     {
-
-      // check if subset of cows is possible
-      if ( dp[j] == NEG_INF )
-      {
-        continue;
-      }
-
-      // get new TS and convert TS back to index
-      int new_TS = (static_cast<int>(j) - index_offset) + current_cow_smartness; // get new sum_s
-      int new_TS_index = new_TS + index_offset;
-
-      if ( new_TS_index < 0 || new_TS_index >= array_size )
-      {
-        continue;
-      }
-
-      // update temp if this cow gives a better TF with the new TS index access
-      if ( temp_dp[static_cast<uint64_t>(new_TS_index)] < dp[j] + current_cow_funness )
-      {
-        temp_dp[static_cast<uint64_t>(new_TS_index)] = dp[j] + current_cow_funness;
-      }
+      continue;
     }
 
-    dp.swap(temp_dp); // update dp with new possible cow
-  }
 
 
-  // all cows processed, now find the max sum starting from non-negative smartness
-  // since question constraints bans us from having negative smartness and funness
-  for ( uint64_t i = index_offset; i < array_size; ++i )
-  {
-    if ( dp[i] >= 0 ) // check valid TF first
+    // process neighboring edges
+    for ( auto& [v_node, edge_num_bumps, edge_distance] : adj_list[u_node] )
     {
-      // TS as the index, and TF as value at i
-      max_sum = std::max(max_sum, static_cast<uint64_t>(static_cast<int64_t>(i - index_offset) + dp[i]));
+      // if new bumps and distance are lexicographically better for v
+      // relax edges
+      if ( std::make_pair(current_bumps + edge_num_bumps, current_distance + edge_distance) < best_route_to[v_node] )
+      {
+        best_route_to[v_node] = {current_bumps + edge_num_bumps, current_distance + edge_distance};
+
+        pq.push({current_bumps + edge_num_bumps, current_distance + edge_distance, v_node});
+      }
     }
   }
 
-  std::cout << max_sum;
+  best_bumps = best_route_to[num_nodes - 1].first;
+  best_distance = best_route_to[num_nodes - 1].second;
+
+  std::cout << best_bumps << " " << best_distance;
 
   return 0;
 }

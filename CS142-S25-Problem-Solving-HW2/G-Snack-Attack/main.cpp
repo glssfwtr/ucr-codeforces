@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 
-static const int64_t NEG_INF = -1e9;
+static const int64_t NEG_INF = -1;
 
 // movement directions: stationary, up, down, left, right
 static const int64_t move_row[5] = {0, -1, +1, 0, 0};
@@ -17,20 +17,25 @@ int main()
   uint64_t square_grid_size;
   uint64_t num_popcorn_drops;
   uint64_t num_boulder_drops;
+
   uint64_t starting_row;
   uint64_t starting_column;
+
   uint64_t row;
   uint64_t column;
   uint64_t time;
+
   uint64_t T_max = 0;
   uint64_t temp_time;
   uint64_t temp_row;
   uint64_t temp_column;
+
   int64_t final_score = 0;
 
   std::cin >> square_grid_size;
   std::cin >> num_popcorn_drops;
   std::cin >> num_boulder_drops;
+
   std::cin >> starting_row;
   std::cin >> starting_column;
 
@@ -118,7 +123,7 @@ int main()
         // find best predecessor
         int64_t best_previous_popcorn = NEG_INF;
 
-        // check all movement directions
+        // check all movement directions, not just 4, but 5 because we can choose to stand still <- ISSUE
         for ( uint64_t d = 0; d < 5; ++d )
         {
           int64_t predecessor_row = static_cast<int64_t>(processing_row) + move_row[d];
